@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMC Tracker - Presentación Técnica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .slide {
+            display: none;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .slide-content {
+            max-width: 1200px;
+            width: 100%;
+        }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100">
+    
+    <!-- Slide 1: Portada -->
+    <div class="slide active" id="slide1">
+        <div class="slide-content text-center">
+            <div class="bg-white rounded-3xl shadow-2xl p-16">
+                <div class="mb-8">
+                    <svg class="w-24 h-24 mx-auto text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <h1 class="text-6xl font-bold text-gray-900 mb-4">IMC Tracker</h1>
+                <p class="text-2xl text-gray-600 mb-8">Aplicación Web para Cálculo y Seguimiento del IMC</p>
+                <div class="flex justify-center gap-4 flex-wrap">
+                    <span class="badge bg-indigo-100 text-indigo-800">Spring Boot 3.2</span>
+                    <span class="badge bg-green-100 text-green-800">Java 17</span>
+                    <span class="badge bg-blue-100 text-blue-800">MySQL 8</span>
+                    <span class="badge bg-purple-100 text-purple-800">Thymeleaf</span>
+                    <span class="badge bg-pink-100 text-pink-800">REST API</span>
+                </div>
+                <p class="text-gray-500 mt-8">Presentación Técnica - Arquitectura MVC</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2: Propósito General -->
+    <div class="slide" id="slide2">
+        <div class="slide-content">
+            <div class="bg-white rounded-3xl shadow-2xl p-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-8 flex items-center">
+                    <span class="bg-indigo-600 text-white w-12 h-12 rounded-full flex items-center justify-center mr-4">1</span>
+                    Propósito General
+                </h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-2xl font-semibold text-indigo-600 mb-4">Objetivos de la Aplicación</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 text-green-500 mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="text-lg text-gray-700"><strong>Registro único</strong> de usuarios con validaciones estrictas</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 text-green-500 mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="text-lg text-gray-700"><strong>Cálculo automático</strong> del Índice de Masa Corporal</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 text-green-500 mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="text-lg text-gray-700"><strong>Seguimiento histórico</strong> de mediciones a lo largo del tiempo</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 text-green-500 mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span class="text-lg text-gray-700"><strong>Clasificación según OMS</strong> (Bajo peso, Normal, Sobrepeso, Obesidad)</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-8 text-white">
+                        <h3 class="text-2xl font-semibold mb-6">Fórmula del IMC</h3>
+                        <div class="bg-white bg-opacity-20 rounded-lg p-6 mb-6">
+                            <div class="text-3xl font-bold text-center mb-2">IMC = Peso / Estatura²</div>
+                            <div class="text-center text-sm">Peso en kg, Estatura en metros</div>
+                        </div>
+                        <h4 class="text-xl font-semibold mb-3">Clasificación:</h4>
+                        <ul class="space-y-2 text-sm">
+                            <li>• IMC &lt; 18.5 → <strong>Bajo peso</strong></li>
+                            <li>• 18.5 ≤ IMC &lt; 25 → <strong>Normal</strong></li>
+                            <li>• 25 ≤ IMC &lt; 30 → <strong>Sobrepeso</strong></li>
+                            <li>• IMC ≥ 30 → <strong>Obesidad</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Arquitectura General -->
+    <div class="slide" id="slide3">
+        <div class="slide-content">
+            <div class="bg-white rounded-3xl shadow-2xl p-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-8 flex items-center">
+                    <span class="bg-indigo-600 text-white w-12 h-12 rounded-full flex items-center justify-center mr-4">2</span>
+                    Arquitectura de la Aplicación
+                </h2>
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border-2 border-blue-200">
+                        <h3 class="text-xl font-bold text-blue-900 mb-4">Model (Modelo)</h3>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            <li>• Usuario</li>
+                            <li>• MedicionIMC</li>
+                        </ul>
+                        <div class="mt-4 text-xs text-blue-700 font-semibold">Entidades JPA - Estructura de datos</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border-2 border-green-200">
+                        <h3 class="text-xl font-bold text-green-900 mb-4">View (Vista)</h3>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            <li>• registro.html</li>
+                            <li>• login.html</li>
+                            <li>• dashboard.html</li>
+                            <li>• historial.html</li>
+                            <li>• perfil.html</li>
+                        </ul>
+                        <div class="mt-4 text-xs text-green-700 font-semibold">Thymeleaf - Presentación</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border-2 border-purple-200">
+                        <h3 class="text-xl font-bold text-purple-900 mb-4">Controller</h3>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            <li>• UsuarioController</li>
+                            <li>• DashboardController</li>
+                            <li>• <strong>IMCRestController</strong></li>
+                        </ul>
+                        <div class="mt-4 text-xs text-purple-700 font-semibold">Spring MVC - Lógica de control</div>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-8 text-white">
+                    <h3 class="text-2xl font-bold mb-4">Total: 17 Clases Principales</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                        <div>
+                            <div class="font-semibold mb-2">Capas Adicionales:</div>
+                            <ul class="space-y-1">
+                                <li>• 2 Repositories</li>
+                                <li>• 2 Services</li>
+                                <li>• 5 DTOs</li>
+                                <li>• 2 Configs</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <div class="font-semibold mb-2">Patrón:</div>
+                            <ul class="space-y-1">
+                                <li>✓ MVC Extendido</li>
+                                <li>✓ Repository Pattern</li>
+                                <li>✓ Service Layer</li>
+                                <li>✓ DTO Pattern</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <div class="font-semibold mb-2">Tecnologías:</div>
+                            <ul class="space-y-1">
+                                <li>✓ Spring Boot</li>
+                                <li>✓ Spring Data JPA</li>
+                                <li>✓ Spring Security</li>
+                                <li>✓ REST API</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Modelo (Entidades) -->
+    <div class="slide" id="slide4">
+        <div class="slide-content">
+            <div class="bg-white rounded-3xl shadow-2xl p-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-8 flex items-center">
+                    <span class="bg-indigo-600 text-white w-12 h-12 rounded-full flex items-center justify-center mr-4">3</span>
+                    Capa de Modelo - Entidades
+                </h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-blue-50 rounded-xl p-6 border-2 border-blue-200">
+                        <h3 class="text-2xl font-bold text-blue-900 mb-4">Usuario.java</h3>
+                        <div class="code-block text-xs mb-4">
+@Entity<br>
+@Table(name = "usuario")<br>
+public class Usuario {<br>
+&nbsp;&nbsp;@Id @GeneratedValue<br>
+&nbsp;&nbsp;private Long id;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;private String nombreCompleto;<br>
+&nbsp;&nbsp;private String nombreUsuario;<br>
+&nbsp;&nbsp;private String password; // BCrypt<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;@Min(15) @Max(120)<br>
+&nbsp;&nbsp;private Integer edad;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;@DecimalMin("1.0") @DecimalMax("2.5")<br>
+&nbsp;&nbsp;private Double estatura;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;@OneToMany(mappedBy = "usuario")<br>
+&nbsp;&nbsp;private List&lt;MedicionIMC&gt; mediciones;<br>
+}
+                        </div>
+                        <div class="bg-blue-100 rounded p-3 text-sm">
+                            <strong>Validaciones:</strong>
+                            <ul class="mt-2 space-y-1 text-xs">
+                                <li>✓ Edad ≥ 15 años</li>
+                                <li>✓ Estatura: 1.0 - 2.5 metros</li>
+                                <li>✓ Username único</li>
+                                <li>✓ Contraseña encriptada</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="bg-green-50 rounded-xl p-6 border-2 border-green-200">
+                        <h3 class="text-2xl font-bold text-green-900 mb-4">📊 MedicionIMC.java</h3>
+                        <div class="code-block text-xs mb-4">
+@Entity<br>
+@Table(name = "medicion_imc")<br>
+public class MedicionIMC {<br>
+&nbsp;&nbsp;@Id @GeneratedValue<br>
+&nbsp;&nbsp;private Long id;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;@DecimalMin("0.1")<br>
+&nbsp;&nbsp;private Double peso;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;private Double imc;<br>
+&nbsp;&nbsp;private String clasificacion;<br>
+&nbsp;&nbsp;private LocalDateTime fechaMedicion;<br>
+&nbsp;&nbsp;private String notas;<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;@ManyToOne<br>
+&nbsp;&nbsp;@JoinColumn(name = "usuario_id")<br>
+&nbsp;&nbsp;private Usuario usuario;<br>
+}
+                        </div>
+                        <div class="bg-green-100 rounded p-3 text-sm">
+                            <strong>Características:</strong>
+                            <ul class="mt-2 space-y-1 text-xs">
+                                <li>✓ Peso validado &gt; 0</li>
+                                <li>✓ IMC calculado y almacenado</li>
+                                <li>✓ Timestamp automático</li>
+                                <li>✓ Relación ManyToOne con Usuario</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 bg-gradient-to-r from-blue-600 to-green-600 rounded-xl p-6 text-white">
+                    <h4 class="text-xl font-bold mb-3">Relación entre Entidades</h4>
+                    <p class="text-lg">Usuario (1) ←→ (*) MedicionIMC</p>
+                    <p class="text-sm mt-2">Un usuario puede tener múltiples mediciones. Cada medición pertenece a un único usuario.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Capas de Servicio y Repository -->
+    <div class="slide" id="slide5">
+        <div class="slide-content">
+            <div class="bg-white rounded-3xl shadow-2xl p-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-8 flex items-center">
+                    <span class="bg-indigo-600 text-white w-12 h-12 rounded-full flex items-center justify-center mr-4">4</span>
+                    Capas de Servicio y Repository
+                </h2>
+                <div class="grid md:grid-cols-2 gap-8 mb-6">
+                    <div class="bg-orange-50 rounded-xl p-6 border-2 border-orange-200">
+                        <h3 class="text-2xl font-bold text-orange-900 mb-4">🗄Repository Layer</h3>
+                        <div class="code-block text-xs mb-4">
+@Repository<br>
+public interface UsuarioRepository<br>
+&nbsp;&nbsp;&nbsp;&nbsp;extends JpaRepository&lt;Usuario, Long&gt; {<br>
+<br>
+&nbsp;&nbsp;Optional&lt;Usuario&gt; findByNombreUsuario(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;String nombreUsuario);<br>
+<br>
+&nbsp;&nbsp;boolean existsByNombreUsuario(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;String nombreUsuario);<br>
+}
+                        </div>
+                        <div class="bg-orange-100 rounded p-3 text-sm">
+                            <strong>Spring Data JPA:</strong>
+                            <ul class="mt-2 space-y-1 text-xs">
+                                <li>✓ Genera SQL automáticamente</li>
+                                <li>✓ Métodos CRUD incluidos</li>
+                                <li>✓ Query methods por nombre</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="bg-purple-50 rounded-xl p-6 border-2 border-purple-200">
+                        <h3 class="text-2xl font-bold text-purple-900 mb-4">⚙Service Layer</h3>
+                        <div class="code-block text-xs mb-4">
+@Service<br>
+public class IMCService {<br>
+<br>
+&nbsp;&nbsp;public Double calcularIMC(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Double peso, Double estatura) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return peso / (estatura * estatura);<br>
+&nbsp;&nbsp;}<br>
+<br>
+&nbsp;&nbsp;public String clasificarIMC(Double imc) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (imc &lt; 18.5) return "Bajo peso";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (imc &lt; 25) return "Normal";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (imc &lt; 30) return "Sobrepeso";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return "Obesidad";<br>
+&nbsp;&nbsp;}<br>
+}
+                        </div>
+                        <div class="bg-purple-100 rounded p-3 text-sm">
+                            <strong>Lógica de Negocio:</strong>
+                            <ul class="mt-2 space-y-1 text-xs">
+                                <li>✓ Cálculos del IMC</li>
+                                <li>✓ Clasificación OMS</li>
+                                <li>✓ Validaciones de negocio</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-6 text-white">
+                    <h4 class="text-xl font-bold mb-4">Flujo de Dependencias</h4>
+                    <div class="flex items-center justify-center space-x-4 text-lg">
+                        <div class="bg-white bg-opacity-20 rounded-lg px-4 py-2">Controller</div>
+                        <span class="text-2xl">→</span>
+                        <div class="bg-white bg-opacity-20 rounded-lg px-4 py-2">Service</div>
+                        <span class="text-2xl">→</span>
+                        <div class="bg-white bg-opacity-20 rounded-lg px-4 py-2">Repository</div>
+                        <span class="text-2xl">→</span>
+                        <div class="bg-white bg-opacity-20 rounded-lg px-4 py-2">Database</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: API REST -->
+    <div class="slide" id="slide6">
+        <div class="slide-content">
+            <div class="bg-white rounded-3xl shadow-2xl p-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-8 flex items-center">
+                    <span class="bg-indigo-600 text-white w-12 h-12 rounded-full flex items-center justify-center mr-4">5</span>
+                    API REST - Consumo de Datos del Historial
+                </h2>
+                <div class="grid md:grid-cols-2 gap-8 mb-6">
+                    <div>
+                        <h3 class="text-2xl font-bold text-indigo-900 mb-4">IMCRestController</h3>
+                        <div class="code-block text-xs mb-4">
+@RestController<br>
+@RequestMapping("/api/imc")<br>
+public class IMCRestController {<br>
+<br>
+&nbsp;&nbsp;@GetMapping("/historial")<br>
+&nbsp;&nbsp;public ResponseEntity&lt;?&gt; obtenerHistorial(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;HttpSession session) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Long usuarioId = (Long) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;session.getAttribute("usuarioId");<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;List&lt;MedicionResponseDTO&gt; historial = <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;imcService.obtenerHistorial(usuarioId);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return ResponseEntity.ok(historial);<br>
+&nbsp;&nbsp;}<br>
+}
+                        </div>
+                        <div class="space-y-2">
+                            <div class="badge bg-green-100 text-green-800">GET /api/imc/historial</div>
+                            <div class="badge bg-blue-100 text-blue-800">GET /api/imc/ultima</div>
+                            <div class="badge bg-purple-100 text-purple-800">POST /api/imc/calcular</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-green-900 mb-4">Consumo desde Frontend</h3>
+                        <div class="code-block text-xs mb-4">
+// historial.html - JavaScript<br>
+<br>
+fetch('/api/imc/historial')<br>
+&nbsp;&nbsp;.then(response => response.json())<br>
+&nbsp;&nbsp;.then(data => {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;// Llenar tabla con mediciones<br>
+&nbsp;&nbsp;&nbsp;&nbsp;mostrarEnTabla(data);<br>
+&nbsp;&nbsp;})<br>
+&nbsp;&nbsp;.catch(error => {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.error('Error:', error);<br>
+&nbsp;&nbsp;});
+                        </div>
+                        <div class="bg-green-50 rounded-xl p-4 border-2 border-green-200">
+                            <h4 class="font-bold text-green-900 mb-2">Respuesta JSON:</h4>
+                            <div class="code-block text-xs">
+[{<br>
+&nbsp;&nbsp;"id": 1,<br>
+&nbsp;&nbsp;"peso": 70.5,<br>
+&nbsp;&nbsp;"imc": 23.02,<br>
+&nbsp;&nbsp;"clasificacion": "Normal",<br>
+&nbsp;&nbsp;"fechaMedicion": "2024-11-04T15:30"<br>
+}]
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-r from-green-600 to-blue-600 rounded-xl p-6 text-white">
+                    <h4 class="text-xl font-bold mb-3">Ventajas del Consumo REST</h4>
+                    <div class="grid md:grid-cols-3 gap-4 text-sm">
+                        <div>✓ Desacoplamiento Frontend-Backend</div>
+                        <div>✓ Reutilizable desde múltiples clientes</div>
+                        <div>✓ Formato JSON estándar</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Base de Datos -->
+    <div class="slide" id="slide7">
+        <div class="slide-content">
+            <div class="bg-white rounded-3xl shadow-2xl p-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-8 flex items-center">
+                    <span class="bg-indigo-600 text-white w-12 h-12 rounded-full flex items-center justify-center mr-4">6</span>
+                    Diseño de Base de Datos
+                </h2>
+                <div class="grid md:grid-cols-2 gap-8 mb-6">
+				<div class="bg-blue-50 rounded-xl p-6 border-2 border-blue-200">
+					<h3 class="text-xl font-bold text-blue-900 mb-4">Tabla: medicion_imc</h3>
+					<div class="space-y-2 text-sm">
+						<div class="flex justify-between">
+							<span class="font-mono">id</span>
+							<span class="badge bg-green-100 text-green-800">BIGINT PK</span>
+						</div>
+						<div class="flex justify-between">
+							<span class="font-mono">usuario_id</span>
+							<span class="badge bg-purple-100 text-purple-800">FK</span>
+						</div>
+						<div class="flex justify-between">
+							<span class="font-mono">peso</span>
+							<span class="badge bg-orange-100 text-orange-800">CHECK &gt;0 AND &lt;=500</span>
+						</div>
+						<div class="flex justify-between">
+							<span class="font-mono">imc</span>
+							<span class="text-gray-600">DECIMAL(5,2)</span>
+						</div>
+						<div class="flex justify-between">
+							<span class="font-mono">clasificacion</span>
+							<span class="badge bg-orange-100 text-orange-800">CHECK ENUM</span>
+						</div>
+						<div class="flex justify-between">
+							<span class="font-mono">fecha_medicion</span>
+							<span class="text-gray-600">TIMESTAMP</span>
+						</div>
+						<div class="flex justify-between">
+							<span class="font-mono">notas</span>
+							<span class="text-gray-600">TEXT</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="bg-blue-50 rounded-xl p-6 border-2 border-blue-200">
+					<h3 class="text-xl font-bold text-blue-900 mb-4">Tabla: usuario</h3>
+					<div class="space-y-2 text-sm">
+						<div class="flex justify-between">
+							<span class="font-mono">id</span>
+							<span class="badge bg-green-100 text-green-800">BIGINT PK</span>
+						</div>
+						<div class="flex justify-between">
+							<span class="font-mono">nombre</span>
+							<span class="text-gray-600">VARCHAR(100)</span>
+						</div>
+						<div class="flex justify-between">
+							<span class="font-mono">email</span>
+							<span class="text-gray-600">VARCHAR(150) UNIQUE</span>
+						</div>
+						<div class="flex justify-between">
+							<span class="font-mono">password</span>
+							<span class="text-gray-600">VARCHAR(255)</span>
+						</div>
+						<div class="flex justify-between">
+							<span class="font-mono">edad</span>
+							<span class="badge bg-orange-100 text-orange-800">CHECK 15–120</span>
+						</div>
+						<div class="flex justify-between">
+							<span class="font-mono">fecha_creacion</span>
+							<span class="text-gray-600">TIMESTAMP</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-6 text-white">
+                    <h4 class="text-xl font-bold mb-4">Justificación del Diseño</h4>
+                    <div class="grid md:grid-cols-2 gap-6 text-sm">
+                        <div>
+                            <h5 class="font-bold mb-2">✓ Normalización (3FN)</h5>
+                            <ul class="space-y-1 text-xs">
+                                <li>• Sin redundancia de datos</li>
+                                <li>• Estatura guardada una vez</li>
+                                <li>• Datos personales no repetidos</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 class="font-bold mb-2">✓ Integridad Referencial</h5>
+                            <ul class="space-y-1 text-xs">
+                                <li>• FK con CASCADE delete</li>
+                                <li>• No mediciones huérfanas</li>
+                                <li>• Constraints de validación</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 class="font-bold mb-2">✓ Rendimiento</h5>
+                            <ul class="space-y-1 text-xs">
+                                <li>• Índice en nombre_usuario</li>
+                                <li>• Índice compuesto (user, fecha)</li>
+                                <li>• IMC precalculado y guardado</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 class="font-bold mb-2">✓ Escalabilidad</h5>
+                            <ul class="space-y-1 text-xs">
+                                <li>• Ilimitadas mediciones por usuario</li>
+                                <li>• Historial completo sin límites</li>
+                                <li>• Timestamps para auditoría</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Seguridad y Validaciones -->
+<div class="slide" id="slide8">
+    <div class="slide-content">
+        <div class="bg-white rounded-3xl shadow-2xl p-12">
+            <h2 class="text-4xl font-bold text-gray-900 mb-8 flex items-center">
+                <span class="bg-indigo-600 text-white w-12 h-12 rounded-full flex items-center justify-center mr-4">7</span>
+                Seguridad y Validaciones
+            </h2>
+            <div class="grid md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-red-50 rounded-xl p-6 border-2 border-red-200">
+                    <h3 class="text-xl font-bold text-red-900 mb-4">Frontend (HTML5)</h3>
+                    <div class="code-block text-xs mb-3">
+&lt;input type="number"<br>
+&nbsp;&nbsp;min="15"<br>
+&nbsp;&nbsp;max="120"<br>
+&nbsp;&nbsp;required&gt;
+                    </div>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li>✓ Validación inmediata</li>
+                        <li>✓ Atributos HTML5</li>
+                        <li>✓ Feedback visual</li>
+                    </ul>
+                </div>
+                <div class="bg-orange-50 rounded-xl p-6 border-2 border-orange-200">
+                    <h3 class="text-xl font-bold text-orange-900 mb-4">Backend (Java)</h3>
+                    <div class="code-block text-xs mb-3">
+@NotNull<br>
+@Min(value = 15)<br>
+@Max(value = 120)<br>
+private Integer edad;
+                    </div>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li>✓ Jakarta Validation</li>
+                        <li>✓ Mensajes custom</li>
+                        <li>✓ BindingResult</li>
+                    </ul>
+                </div>
+                <div class="bg-yellow-50 rounded-xl p-6 border-2 border-yellow-200">
+                    <h3 class="text-xl font-bold text-yellow-900 mb-4">Base de Datos</h3>
+                    <div class="code-block text-xs mb-3">
+CHECK (<br>
+&nbsp;&nbsp;edad >= 15<br>
+&nbsp;&nbsp;AND edad <= 120<br>
+)
+                    </div>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li>✓ CHECK constraints</li>
+                        <li>✓ UNIQUE constraints</li>
+                        <li>✓ NOT NULL</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl p-6 text-white">
+                    <h4 class="text-xl font-bold mb-4">Encriptación BCrypt</h4>
+                    <div class="code-block text-xs mb-3">
+String hashedPassword = <br>
+&nbsp;&nbsp;passwordEncoder.encode(password);<br>
+<br>
+// Resultado:<br>
+// $2a$10$xqGwFoXdQmkP0VJhKj0kMe...
+                    </div>
+                    <ul class="space-y-1 text-sm">
+                        <li>✓ Hash unidireccional</li>
+                        <li>✓ Factor de trabajo: 10</li>
+                        <li>✓ Salt automático</li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl p-6 text-white">
+                    <h4 class="text-xl font-bold mb-4">Gestión de Sesiones</h4>
+                    <div class="space-y-3 text-sm">
+                        <div class="bg-white bg-opacity-20 rounded p-3">
+                            <strong>Login exitoso:</strong><br>
+                            session.setAttribute("usuarioId", id);
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded p-3">
+                            <strong>Verificación:</strong><br>
+                            if (usuarioId == null) redirect("/login");
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded p-3">
+                            <strong>Logout:</strong><br>
+                            session.invalidate();
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Slide 9: Flujo Completo -->
+    <div class="slide" id="slide9">
+        <div class="slide-content">
+            <div class="bg-white rounded-3xl shadow-2xl p-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-8 flex items-center">
+                    <span class="bg-indigo-600 text-white w-12 h-12 rounded-full flex items-center justify-center mr-4">8</span>
+                    Flujo Completo: Calcular IMC
+                </h2>
+                <div class="space-y-4">
+                    <div class="flex items-center">
+                        <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mr-4">1</div>
+                        <div class="flex-1 bg-blue-50 rounded-lg p-4 border-2 border-blue-200">
+                            <strong>Usuario</strong> ingresa peso en dashboard.html (58.5 kg)
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="bg-green-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mr-4">2</div>
+                        <div class="flex-1 bg-green-50 rounded-lg p-4 border-2 border-green-200">
+                            <strong>JavaScript</strong> envía POST a /api/imc/calcular con JSON
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="bg-purple-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mr-4">3</div>
+                        <div class="flex-1 bg-purple-50 rounded-lg p-4 border-2 border-purple-200">
+                            <strong>IMCRestController</strong> recibe MedicionDTO y valida
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="bg-orange-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mr-4">4</div>
+                        <div class="flex-1 bg-orange-50 rounded-lg p-4 border-2 border-orange-200">
+                            <strong>IMCService</strong> calcula: 58.5 / (1.62²) = 22.3
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="bg-pink-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mr-4">5</div>
+                        <div class="flex-1 bg-pink-50 rounded-lg p-4 border-2 border-pink-200">
+                            <strong>IMCService</strong> clasifica: IMC 22.3 → "Normal"
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="bg-indigo-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mr-4">6</div>
+                        <div class="flex-1 bg-indigo-50 rounded-lg p-4 border-2 border-indigo-200">
+                            <strong>Repository</strong> guarda en BD: INSERT INTO medicion_imc...
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="bg-red-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mr-4">7</div>
+                        <div class="flex-1 bg-red-50 rounded-lg p-4 border-2 border-red-200">
+                            <strong>Respuesta JSON</strong> regresa al navegador con resultado
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="bg-teal-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mr-4">8</div>
+                        <div class="flex-1 bg-teal-50 rounded-lg p-4 border-2 border-teal-200">
+                            <strong>JavaScript</strong> actualiza interfaz y muestra mensaje de éxito
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Demostración -->
+    <div class="slide" id="slide10">
+        <div class="slide-content">
+            <div class="bg-white rounded-3xl shadow-2xl p-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-8 flex items-center">
+                    <span class="bg-indigo-600 text-white w-12 h-12 rounded-full flex items-center justify-center mr-4">9</span>
+                    Demostración
+                </h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white">
+                            <h3 class="text-2xl font-bold mb-4">Funcionalidades a Demostrar</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <span class="text-2xl mr-3">1️⃣</span>
+                                    <div>
+                                        <strong>Registro de Usuario</strong>
+                                        <p class="text-sm text-blue-100">Con validaciones activas</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-2xl mr-3">2️⃣</span>
+                                    <div>
+                                        <strong>Inicio de Sesión</strong>
+                                        <p class="text-sm text-blue-100">Autenticación segura</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-2xl mr-3">3️⃣</span>
+                                    <div>
+                                        <strong>Calcular IMC</strong>
+                                        <p class="text-sm text-blue-100">Con resultado inmediato</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-2xl mr-3">4️⃣</span>
+                                    <div>
+                                        <strong>Ver Historial (API REST)</strong>
+                                        <p class="text-sm text-blue-100">Consumido con fetch()</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-2xl mr-3">5️⃣</span>
+                                    <div>
+                                        <strong>DevTools Network</strong>
+                                        <p class="text-sm text-blue-100">Mostrar peticiones REST</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white">
+                            <h3 class="text-2xl font-bold mb-4">Validaciones a Probar</h3>
+                            <ul class="space-y-2 text-sm">
+                                <li>✓ Edad menor a 15 años</li>
+                                <li>✓ Estatura fuera de rango</li>
+                                <li>✓ Peso = 0 o negativo</li>
+                                <li>✓ Username duplicado</li>
+                                <li>✓ Login sin sesión</li>
+                                <li>✓ Datos correctos</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white">
+                            <h3 class="text-xl font-bold mb-3">DevTools - Network</h3>
+                            <div class="bg-white bg-opacity-20 rounded p-3 text-sm">
+                                <strong>Mostrar petición:</strong><br>
+                                GET /api/imc/historial<br>
+                                Status: 200 OK<br>
+                                Content-Type: application/json
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6">
+                    <p class="text-lg text-center font-semibold text-yellow-900">
+                        🎥 <strong>Momento de cambiar a navegador</strong> para demostración en vivo
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Conclusiones -->
+    <div class="slide" id="slide11">
+        <div class="slide-content">
+            <div class="bg-white rounded-3xl shadow-2xl p-12">
+                <h2 class="text-4xl font-bold text-gray-900 mb-8 flex items-center">
+                    <span class="bg-indigo-600 text-white w-12 h-12 rounded-full flex items-center justify-center mr-4">10</span>
+                    Conclusiones
+                </h2>
+                <div class="grid md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <h3 class="text-2xl font-bold text-indigo-900 mb-4">Logros Obtenidos</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 text-green-500 mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span><strong>Arquitectura MVC completa</strong> con 17 clases bien organizadas</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 text-green-500 mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span><strong>API REST funcional</strong> para consumo de datos del historial</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 text-green-500 mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span><strong>Base de datos normalizada</strong> con integridad referencial</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 text-green-500 mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span><strong>Validaciones en 3 capas</strong> (Frontend, Backend, BD)</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg class="w-6 h-6 text-green-500 mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span><strong>Seguridad implementada</strong> con BCrypt y sesiones HTTP</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-purple-900 mb-4">Tecnologías Utilizadas</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-blue-50 rounded-lg p-4 border-2 border-blue-200">
+                                <div class="font-bold text-blue-900">Backend</div>
+                                <ul class="text-sm mt-2 space-y-1">
+                                    <li>• Spring Boot 3.2</li>
+                                    <li>• Spring Data JPA</li>
+                                    <li>• Spring Security</li>
+                                    <li>• Jakarta Validation</li>
+                                </ul>
+                            </div>
+                            <div class="bg-green-50 rounded-lg p-4 border-2 border-green-200">
+                                <div class="font-bold text-green-900">Frontend</div>
+                                <ul class="text-sm mt-2 space-y-1">
+                                    <li>• Thymeleaf</li>
+                                    <li>• Tailwind CSS</li>
+                                    <li>• JavaScript (Fetch)</li>
+                                    <li>• HTML5</li>
+                                </ul>
+                            </div>
+                            <div class="bg-orange-50 rounded-lg p-4 border-2 border-orange-200">
+                                <div class="font-bold text-orange-900">Base de Datos</div>
+                                <ul class="text-sm mt-2 space-y-1">
+                                    <li>• MySQL 8.0</li>
+                                    <li>• JPA/Hibernate</li>
+                                    <li>• Constraints</li>
+                                    <li>• Índices</li>
+                                </ul>
+                            </div>
+                            <div class="bg-purple-50 rounded-lg p-4 border-2 border-purple-200">
+                                <div class="font-bold text-purple-900">Herramientas</div>
+                                <ul class="text-sm mt-2 space-y-1">
+                                    <li>• Maven</li>
+                                    <li>• Java 17</li>
+                                    <li>• Git</li>
+                                    <li>• DevTools</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-8 text-white text-center">
+                    <h3 class="text-3xl font-bold mb-3">Requisitos Cumplidos</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6">
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-4xl font-bold">100%</div>
+                            <div class="text-sm">Funcionalidad</div>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-4xl font-bold">17</div>
+                            <div class="text-sm">Clases Java</div>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-4xl font-bold">2</div>
+                            <div class="text-sm">Tablas BD</div>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-4xl font-bold">5</div>
+                            <div class="text-sm">Vistas HTML</div>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <div class="text-4xl font-bold">API</div>
+                            <div class="text-sm">REST</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 12: Gracias -->
+    <div class="slide" id="slide12">
+        <div class="slide-content text-center">
+            <div class="bg-white rounded-3xl shadow-2xl p-16">
+                <div class="mb-8">
+                    <svg class="w-32 h-32 mx-auto text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h1 class="text-6xl font-bold text-gray-900 mb-6">¡Gracias!</h1>
+                <p class="text-3xl text-gray-600 mb-8">IMC Tracker - Presentación Tecnica</p>
+                <div class="bg-gradient-to-r from-indigo-100 to-purple-100 rounded-xl p-8 max-w-2xl mx-auto">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Proyecto Completado</h3>
+                    <p class="text-lg text-gray-700 mb-4">
+                        Aplicación web empresarial con arquitectura MVC, API REST y base de datos normalizada
+                    </p>
+                    <div class="flex justify-center gap-4 flex-wrap mt-6">
+                        <span class="badge bg-green-100 text-green-800 text-lg">✓ Funcional</span>
+                        <span class="badge bg-blue-100 text-blue-800 text-lg">✓ Escalable</span>
+                        <span class="badge bg-purple-100 text-purple-800 text-lg">✓ Seguro</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Controles de navegación -->
+    <div class="fixed bottom-8 right-8 flex gap-4">
+        <button onclick="previousSlide()" class="bg-white text-indigo-600 px-6 py-3 rounded-full shadow-lg hover:bg-indigo-50 font-semibold">
+            ← Anterior
+        </button>
+        <button onclick="nextSlide()" class="bg-indigo-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-indigo-700 font-semibold">
+            Siguiente →
+        </button>
+    </div>
+
+    <!-- Contador de slides -->
+    <div class="fixed bottom-8 left-8 bg-white px-6 py-3 rounded-full shadow-lg">
+        <span class="font-semibold text-gray-700">Slide <span id="currentSlide">1</span> / <span id="totalSlides">12</span></span>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 12;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach(slide => slide.classList.remove('active'));
+            
+            if (n > totalSlides) currentSlide = 1;
+            if (n < 1) currentSlide = totalSlides;
+            
+            document.getElementById(`slide${currentSlide}`).classList.add('active');
+            document.getElementById('currentSlide').textContent = currentSlide;
+        }
+
+        function nextSlide() {
+            currentSlide++;
+            showSlide(currentSlide);
+        }
+
+        function previousSlide() {
+            currentSlide--;
+            showSlide(currentSlide);
+        }
+
+        // Navegación con teclado
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight' || event.key === ' ') {
+                nextSlide();
+            } else if (event.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+
+        // Inicializar
+        showSlide(currentSlide);
+    </script>
+
+</body>
+</html>
