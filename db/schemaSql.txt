@@ -1,0 +1,86 @@
+-- ===============================================
+-- SCRIPT DE CREACIÓN DE BASE DE DATOS
+-- IMC TRACKER APPLICATION
+-- ===============================================
+
+-- Crear la base de datos
+CREATE DATABASE IF NOT EXISTS imc_app
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+
+-- Usar la base de datos
+USE imc_app;
+
+-- Eliminar tablas si existen (para desarrollo)
+DROP TABLE IF EXISTS medicion_imc;
+DROP TABLE IF EXISTS usuario;
+
+-- ===============================================
+-- TABLA: usuario
+-- ===============================================
+CREATE TABLE usuario (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre_completo VARCHAR(100) NOT NULL,
+    nombre_usuario VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL COMMENT 'Contraseña encriptada con BCrypt',
+    edad INT NOT NULL CHECK (edad >= 15 AND edad <= 120),
+    sexo VARCHAR(10) NOT NULL CHECK (sexo IN ('Masculino', 'Femenino', 'Otro')),
+    estatura DECIMAL(5,2) NOT NULL CHECK (estatura >= 1.0 AND estatura <= 2.5),
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ultima_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    -- Índices para mejorar rendimiento
+    INDEX idx_nombre_usuario (nombre_usuario),
+    INDEX idx_fecha_registro (fecha_registro)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ===============================================
+-- TABLA: medicion_imc
+-- ===============================================
+CREATE TABLE medicion_imc (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id BIGINT NOT NULL,
+    peso DECIMAL(5,2) NOT NULL CHECK (peso > 0 AND peso <= 500),
+    imc DECIMAL(5,2) NOT NULL,
+    clasificacion VARCHAR(20) NOT NULL CHECK (clasificacion IN ('Bajo peso', 'Normal', 'Sobrepeso', 'Obesidad')),
+    fecha_medicion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    notas TEXT,
+    
+    -- Clave foránea
+    CONSTRAINT fk_medicion_usuario 
+        FOREIGN KEY (usuario_id) 
+        REFERENCES usuario(id) 
+        ON DELETE CASCADE 
+        ON UPDATE CASCADE,
+    
+    -- Índices para mejorar rendimiento
+    INDEX idx_usuario_fecha (usuario_id, fecha_medicion DESC),
+    INDEX idx_fecha_medicion (fecha_medicion DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
+-- ===============================================
+-- DATOS DE PRUEBA
+-- ===============================================
+
+-- Insertar usuario de prueba
+-- Contraseña: password123 (encriptada con BCrypt)
+INSERT INTO usuario (nombre_completo, nombre_usuario, password, edad, sexo, estatura) VALUES
+('Juan Pérez García', 'juanperez', '$2a$10$xqGwFoXdQmkP0VJhKj0kMejvvXi1QIcYJfL7oUwH4.yMKpEpGLMCy', 25, 'Masculino', 1.75),
+('María López Hernández', 'marialopez', '$2a$10$xqGwFoXdQmkP0VJhKj0kMejvvXi1QIcYJfL7oUwH4.yMKpEpGLMCy', 30, 'Femenino', 1.65),
+('Carlos Ramírez', 'carlosram', '$2a$10$xqGwFoXdQmkP0VJhKj0kMejvvXi1QIcYJfL7oUwH4.yMKpEpGLMCy', 28, 'Masculino', 1.80);
+
+-- Insertar mediciones de prueba para el usuario 1 (Juan Pérez)
+INSERT INTO medicion_imc (usuario_id, peso, imc, clasificacion, fecha_medicion, notas) VALUES
+(1, 70.5, 23.02, 'Normal', DATE_SUB(NOW(), INTERVAL 60 DAY), 'Primera medición'),
+(1, 71.0, 23.18, 'Normal', DATE_SUB(NOW(), INTERVAL 45 DAY), 'Después de vacaciones'),
+(1, 69.8, 22.80, 'Normal', DATE_SUB(NOW(), INTERVAL 30 DAY), 'Iniciando ejercicio'),
+(1, 68.5, 22.37, 'Normal', DATE_SUB(NOW(), INTERVAL 15 DAY), 'Progreso visible'),
+(1, 68.0, 22.20, 'Normal', NOW(), 'Peso actual');
+
+-- Insertar mediciones para el usuario 2 (María López)
+INSERT INTO medicion_imc (usuario_id, peso, imc, clasificacion, fecha_medicion) VALUES
+(2, 62.0, 22.77, 'Normal', DATE_SUB(NOW(), INTERVAL 30 DAY)),
+(2, 61.5, 22.59, 'Normal', DATE_SUB(NOW(), INTERVAL 15 DAY)),
+(2, 61.0, 22.41, 'Normal', NOW());
